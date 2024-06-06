@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -17,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,11 +27,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
-
 @Composable
-fun HomeScreen(navController: NavController){
-    var username by remember { mutableStateOf("") }
-    var count by remember { mutableIntStateOf(0) }
+fun ThirdScreen(navController: NavController) {
+    var isUserBelow18 by remember { mutableStateOf(false) }
+    var enteredValue by remember { mutableStateOf("") }
 
     Column (
         modifier = Modifier
@@ -42,29 +39,51 @@ fun HomeScreen(navController: NavController){
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        TextField(
-            value = username,
-            onValueChange = { newUser -> username = newUser },
-        )
+//        TextField(
+//            value = username,
+//            onValueChange = { newUser -> username = newUser },
+//        )
 
+        TextField(
+            value = enteredValue,
+            onValueChange = {newUserValue -> enteredValue = newUserValue},
+            label = { Text(text = "Age") },
+            placeholder = { Text(text = "Enter your Age") },
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.Person,
+                    contentDescription = "Email")
+            },
+
+            isError = isUserBelow18,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    isUserBelow18 = checkUserAge(inputText = enteredValue.toInt())
+                }
+            )
+        )
+        
         Button(
             onClick = {
-                navController.navigate(Destinations.SecondScreen.toString() + "/$username")
+                isUserBelow18 = checkUserAge(inputText = enteredValue.toInt())
             }
-        ) {
-            Text(text = "Click me ")
-        }
-
-        Button(
-            onClick = {count++}
         ){
-            Text(text = "Count: $count")
+            Text(text = "Check age")
         }
 
-        Button(
-            onClick = { navController.navigate(Destinations.ThirdScreen.toString())}
-        ) {
-            Text(text = "ThirdScreen")
+        if(isUserBelow18){
+            Text(text = "you should be at least 18",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(start = 16.dp)
+            )
         }
+
     }
+}
+
+fun checkUserAge(inputText: Int): Boolean {
+    return inputText.toInt() < 18
 }

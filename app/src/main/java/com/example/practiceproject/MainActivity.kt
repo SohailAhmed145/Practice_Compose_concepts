@@ -97,6 +97,9 @@ fun MyNavigation() {
             val user = it.arguments?.getString("username")
             SecondScreen(user.toString(),navController)
         }
+        composable(Destinations.ThirdScreen.toString()){
+            ThirdScreen(navController)
+        }
     }
 }
 
